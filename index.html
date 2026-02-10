@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>shivi's wardrobe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body{
+      margin:0;
+      background:#eaeaea;
+      font-family: Arial, Helvetica, sans-serif;
+      overflow:hidden;
+    }
+
+    /* Toggle button */
+    .toggle-btn {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      padding: 6px 12px;
+      background: #fff;
+      border: 1px solid #999;
+      font-size: 11px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    /* Scroll view styles */
+    .scroll-view {
+      display: none;
+    }
+
+    .scroll-view.active {
+      display: block;
+    }
+
+    .wrap{
+      height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      box-sizing:border-box;
+    }
+
+    .viewer{
+      width:min(1100px, 100%);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:24px;
+      user-select:none;
+    }
+
+    .slot{
+      flex:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-width:0;
+    }
+
+    .slot.center{
+      flex:1.6;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    img{
+      max-width:100%;
+      height:auto;
+      display:block;
+    }
+
+    .side img{
+      opacity:0.22;
+      max-height:70vh;
+      width:auto;
+      cursor:pointer;
+    }
+
+    .center img{
+      max-height:78vh;
+      width:auto;
+    }
+
+    .scroll-view .caption{
+      font-size:11px;
+      line-height:1.2;
+      text-align:center;
+      color:#000;
+    }
+
+    .hint{
+      position:fixed;
+      left:12px;
+      bottom:10px;
+      font-size:10px;
+      opacity:0.45;
+    }
+
+    /* Grid view styles */
+    .grid-view {
+      display: none;
+      overflow-y: auto;
+      height: 100vh;
+      padding: 48px;
+      box-sizing: border-box;
+    }
+
+    .grid-view.active {
+      display: block;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 48px;
+    }
+
+    .item {
+      text-align: center;
+    }
+
+    .item img {
+      max-width: 90%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .item .caption {
+      margin-top: 6px;
+      font-size: 11px;
+      line-height: 1.2;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+@media (max-width: 700px){
+  .side img {
+    opacity: 1;
+    max-height: 78vh; /* same as center */
+  }
+  
+  .viewer {
+    overflow: hidden; /* cuts off the sides that bleed */
+  }
+}
+
+    @media (max-width: 500px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <button class="toggle-btn" id="toggleBtn">view as grid</button>
+
+  <!-- Scroll View -->
+  <div class="scroll-view active" id="scrollView">
+    <div class="wrap">
+      <div class="viewer">
+        <div class="slot side" id="prevSlot"></div>
+
+        <div class="slot center">
+          <div id="mainSlot"></div>
+          <div class="caption" id="cap"></div>
+        </div>
+
+        <div class="slot side" id="nextSlot"></div>
+      </div>
+    </div>
+
+    <div class="hint">shivi's summer wardrobe</div>
+  </div>
+
+  <!-- Grid View -->
+  <div class="grid-view" id="gridView">
+    <div class="grid" id="gridContainer"></div>
+  </div>
+
+  <script>
+    const items = [
+      { src: "that dress with patch pockets.png", caption: "the light blue dress I wore in holland." },
+      { src: "that black westside dress.png", caption: "that westside dress richa said her mom also owned." },
+      { src: "blue print dress.png", caption: "that indigo print dress with deep pockets." },
+      { src: "that bienalle dress.png", caption: "that dress a stranger complimented at the bienalle." },
+      { src: "that family photo dress.png", caption: "that family photo dress." },
+      { src: "that cream top.png", caption: "that linen top I wore to the hot french countryside." },
+      { src: "that kutch trip skirt.png", caption: "that kutch trip skirt." },
+      { src: "that party dress.png", caption: "that dress I wore at the weekender and hardly ever again." },
+      { src: "that bangalore dress.png", caption: "the dress I have worn out." },
+      { src: "that blue polka dot dress.png", caption: "the dress I wore to cubbon park when mum was visiting." },
+      { src: "dark fabindia top.png", caption: "that top I wore on our road trip to gwalior." },
+      { src: "that denim skirt.png", caption: "that denim skirt I wore to karaoke in valence." },
+      { src: "that bird dress.png", caption: "that small bird print dress." },
+      { src: "that monsoon dress.png", caption: "the dress that reminds me of mumbai monsoons." },
+      { src: "that pink floral top.png", caption: "that top I wore to lunch with Shruthi." },
+      { src: "that diwali dress.png", caption: "that second-hand diwali dress from indiska." },
+      { src: "that profile photo dress.png", caption: "that dress from my facebook dp." }
+    ];
+
+    let i = 0;
+    let viewMode = 'scroll'; // 'scroll' or 'grid'
+
+    const prevSlot = document.getElementById("prevSlot");
+    const nextSlot = document.getElementById("nextSlot");
+    const mainSlot = document.getElementById("mainSlot");
+    const cap = document.getElementById("cap");
+    const toggleBtn = document.getElementById("toggleBtn");
+    const scrollView = document.getElementById("scrollView");
+    const gridView = document.getElementById("gridView");
+    const gridContainer = document.getElementById("gridContainer");
+
+    function idx(n){
+      const L = items.length;
+      return (n % L + L) % L;
+    }
+
+    function imgEl(item){
+      const img = document.createElement("img");
+      img.src = item.src;
+      img.alt = item.caption || "";
+      return img;
+    }
+
+    function renderScroll(){
+      const prev = items[idx(i - 1)];
+      const curr = items[idx(i)];
+      const next = items[idx(i + 1)];
+
+      prevSlot.innerHTML = "";
+      nextSlot.innerHTML = "";
+      mainSlot.innerHTML = "";
+
+      const pImg = imgEl(prev);
+      const nImg = imgEl(next);
+      const cImg = imgEl(curr);
+
+      prevSlot.appendChild(pImg);
+      nextSlot.appendChild(nImg);
+      mainSlot.appendChild(cImg);
+
+      cap.textContent = curr.caption || "";
+
+      pImg.onclick = () => { i = idx(i - 1); renderScroll(); };
+      nImg.onclick = () => { i = idx(i + 1); renderScroll(); };
+    }
+
+    function renderGrid(){
+      gridContainer.innerHTML = "";
+      
+      items.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "item";
+        
+        const img = imgEl(item);
+        const caption = document.createElement("div");
+        caption.className = "caption";
+        caption.textContent = item.caption || "";
+        
+        div.appendChild(img);
+        div.appendChild(caption);
+        gridContainer.appendChild(div);
+      });
+    }
+
+    function toggleView(){
+      if (viewMode === 'scroll') {
+        viewMode = 'grid';
+        scrollView.classList.remove('active');
+        gridView.classList.add('active');
+        toggleBtn.textContent = 'view as scroll';
+        document.body.style.overflow = 'auto';
+        if (gridContainer.children.length === 0) renderGrid();
+      } else {
+        viewMode = 'scroll';
+        gridView.classList.remove('active');
+        scrollView.classList.add('active');
+        toggleBtn.textContent = 'view as grid';
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    toggleBtn.addEventListener('click', toggleView);
+
+    function go(delta){
+      i = idx(i + delta);
+      renderScroll();
+    }
+
+    window.addEventListener("keydown", (e) => {
+      if (viewMode !== 'scroll') return;
+      if (e.key === "ArrowLeft") go(-1);
+      if (e.key === "ArrowRight") go(1);
+    });
+
+let wheelLock = false;
+window.addEventListener("wheel", (e) => {
+  if (viewMode !== 'scroll') return;
+  if (wheelLock) return;
+  
+  e.preventDefault(); // Add this line
+  
+  wheelLock = true;
+  setTimeout(() => wheelLock = false, 120);
+
+  const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+  if (d > 0) go(1);
+  if (d < 0) go(-1);
+});
+
+    renderScroll();
+  </script>
+</body>
+</html>
