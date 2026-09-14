@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>summer wardrobe</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  body{
+    margin:0;
+    background:#eaeaea;
+    font-family: Arial, Helvetica, sans-serif;
+    overflow:hidden;
+  }
+
+  .toggle-btn{
+    position:fixed;
+    top:12px;
+    right:12px;
+    padding:6px 12px;
+    background:#fff;
+    border:1px solid #999;
+    font-size:11px;
+    cursor:pointer;
+    z-index:1000;
+  }
+
+  /* ---------- POSTER VIEW ---------- */
+  .poster-view{ display:none; }
+  .poster-view.active{ display:block; }
+
+  .fit{
+    position:fixed;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+
+  /* everything is composed inside this fixed 700x1050 canvas, then scaled */
+  .canvas{
+    position:relative;
+    width:700px;
+    height:1050px;
+    flex:none;
+    transform-origin:center center;
+    user-select:none;
+  }
+
+  .type{ position:absolute; inset:0; z-index:1; }
+
+  .type i{
+    position:absolute;
+    display:block;
+    font-family:'Instrument Serif', Georgia, serif;
+    font-style:normal;
+    font-weight:400;
+    line-height:.78;
+    letter-spacing:-.015em;
+    white-space:nowrap;
+    -webkit-text-stroke:1.6px #111;
+    visibility:hidden;
+  }
+  .type i.on{ visibility:visible; }
+  .type i.it{ font-style:italic; }
+
+  .figure{
+    position:absolute;
+    left:50%;
+    bottom:0;
+    transform:translateX(-50%);
+    z-index:2;
+    max-height:1010px;
+    width:auto;
+    display:block;
+  }
+
+  /* invisible click zones for prev / next */
+  .zone{
+    position:fixed;
+    top:0;
+    bottom:0;
+    width:28%;
+    z-index:900;
+    cursor:pointer;
+  }
+  .zone.prev{ left:0; }
+  .zone.next{ right:0; }
+
+  .hint{
+    position:fixed;
+    left:12px;
+    bottom:10px;
+    font-size:10px;
+    opacity:.45;
+    z-index:1000;
+  }
+
+  /* ---------- GRID VIEW ---------- */
+  .grid-view{
+    display:none;
+    overflow-y:auto;
+    height:100vh;
+    padding:48px;
+    box-sizing:border-box;
+  }
+  .grid-view.active{ display:block; }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:48px;
+  }
+  .item{ text-align:center; }
+  .item img{
+    max-width:90%;
+    height:auto;
+    display:block;
+    margin:0 auto;
+    cursor:pointer;
+  }
+  .item .caption{
+    margin-top:6px;
+    font-size:11px;
+    line-height:1.2;
+  }
+
+  @media (max-width: 900px){
+    .grid{ grid-template-columns:repeat(2, 1fr); }
+  }
+  @media (max-width: 500px){
+    .grid{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+
+<body>
+
+<button class="toggle-btn" id="toggleBtn">view as grid</button>
+
+<!-- POSTER VIEW -->
+<div class="poster-view active" id="posterView">
+  <div class="fit">
+    <div class="canvas" id="canvas">
+      <div class="type" id="type"></div>
+      <img class="figure" id="figure" alt="">
+    </div>
+  </div>
+  <div class="zone prev" id="zPrev"></div>
+  <div class="zone next" id="zNext"></div>
+  <div class="hint">shivi's summer wardrobe</div>
+</div>
+
+<!-- GRID VIEW -->
+<div class="grid-view" id="gridView">
+  <div class="grid" id="gridContainer"></div>
+</div>
+
+<script>
+/* ---------------------------------------------------------------
+   Each item is composed inside a fixed 700 x 1050 canvas.
+   line = [text, fontSize, x, y, rotation, italic?]
+   x / y are the top-left of the line, in canvas units.
+   The whole canvas is then scaled to fit whatever screen it lands on,
+   so the composition you approve is exactly what ships.
+----------------------------------------------------------------*/
+const items = [
+  {
+    src: "that dress with patch pockets.png",
+    caption: "the dress I wore on our trip to den haag.",
+    color: "#cc3a35",
+    lines: [
+      ["the dress I wore on our", 34, 40, 402, -3],
+      ["trip to", 34, 40, 448, -3],
+      ["den", 178, 26, 520, 2],
+      ["haag", 178, 300, 740, -2.5, 1]
+    ]
+  },
+  {
+    src: "blue print dress.png",
+    caption: "that indigo print dress with deep pockets.",
+    color: "#29459a",
+    lines: [
+      ["that indigo print dress with", 34, 40, 400, -2.5],
+      ["deep", 170, 24, 470, 2],
+      ["pockets", 150, 240, 700, -2, 1]
+    ]
+  },
+  {
+    src: "that black westside dress.png",
+    caption: "that westside dress richa said her mom also owned.",
+    color: "#f4f1e8",
+    lines: [
+      ["that", 34, 44, 388, -3],
+      ["westside", 152, 20, 440, 1.5],
+      ["dress richa said her mom", 32, 40, 600, -2],
+      ["also owned", 110, 210, 730, -2.5, 1]
+    ]
+  },
+  {
+    src: "that family photo dress.png",
+    caption: "that family photo dress.",
+    color: "#4a63c8",
+    lines: [
+      ["that", 34, 46, 400, -3],
+      ["family", 176, 26, 452, 2],
+      ["photo", 176, 250, 660, -2],
+      ["dress", 176, 90, 860, 1.5, 1]
+    ]
+  },
+  {
+    src: "that kutch trip skirt.png",
+    caption: "that kutch trip skirt.",
+    color: "#b2382f",
+    lines: [
+      ["that", 34, 46, 420, -3],
+      ["kutch trip", 132, 24, 472, 2],
+      ["skirt", 160, 320, 700, -2.5, 1]
+    ]
+  },
+  {
+    src: "that cream top.png",
+    caption: "the linen top I wore last summer in France.",
+    color: "#8fb3d9",
+    lines: [
+      ["the linen top I wore", 34, 40, 396, -2.5],
+      ["last summer", 124, 22, 452, 2],
+      ["in", 124, 26, 580, -1],
+      ["france", 176, 230, 720, -2.5, 1]
+    ]
+  },
+  {
+    src: "that bird dress.png",
+    caption: "that small bird print dress.",
+    color: "#e5b032",
+    lines: [
+      ["that small", 34, 42, 406, -4],
+      ["bird", 178, 20, 462, 2.5],
+      ["print", 178, 300, 660, -3],
+      ["dress", 190, 60, 860, 1.5, 1]
+    ]
+  },
+  {
+    src: "that bangalore dress.png",
+    caption: "the dress I have worn out.",
+    color: "#41639b",
+    lines: [
+      ["the dress", 150, 26, 430, 2],
+      ["I have", 150, 300, 620, -2.5, 1],
+      ["worn out", 176, 40, 830, 1.5]
+    ]
+  },
+  {
+    src: "that bienalle dress.png",
+    caption: "that dress a stranger complimented at the bienalle.",
+    color: "#f4f1e8",
+    lines: [
+      ["that dress a stranger", 34, 40, 396, -2.5],
+      ["complimented", 34, 40, 442, -2.5],
+      ["at the", 150, 24, 510, 2],
+      ["bienalle", 130, 230, 730, -2.5, 1]
+    ]
+  },
+  {
+    src: "that blue polka dot dress.png",
+    caption: "the dress I wore to cubbon park when mum was visiting.",
+    color: "#3b4f96",
+    lines: [
+      ["the dress I wore to", 34, 40, 392, -3],
+      ["cubbon", 168, 22, 450, 2],
+      ["park", 168, 340, 640, -2],
+      ["when mum was visiting", 32, 60, 880, 1.5, 1]
+    ]
+  },
+  {
+    src: "that party dress.png",
+    caption: "that dress I wore at the weekender and hardly ever again.",
+    color: "#e08a95",
+    lines: [
+      ["that dress I wore at the", 34, 40, 398, -2.5],
+      ["weekender", 140, 20, 456, 2],
+      ["and hardly", 104, 240, 680, -2.5, 1],
+      ["ever again", 104, 90, 860, 1.5]
+    ]
+  },
+  {
+    src: "that denim skirt.png",
+    caption: "that denim skirt I wore to karaoke in valence.",
+    color: "#6288ad",
+    lines: [
+      ["that denim skirt I wore to", 34, 40, 400, -2.5],
+      ["karaoke", 172, 22, 460, 2],
+      ["in valence", 110, 180, 700, -2.5, 1]
+    ]
+  },
+  {
+    src: "that diwali dress.png",
+    caption: "that second-hand diwali dress from indiska.",
+    color: "#a4523c",
+    lines: [
+      ["that second-hand", 34, 42, 398, -3],
+      ["diwali", 180, 24, 452, 2],
+      ["dress", 160, 290, 660, -2],
+      ["from indiska", 104, 70, 870, 1.5, 1]
+    ]
+  },
+  {
+    src: "that monsoon dress.png",
+    caption: "the dress that reminds me of mumbai monsoons.",
+    color: "#2f63b5",
+    lines: [
+      ["the dress that reminds me of", 34, 40, 396, -2.5],
+      ["mumbai", 170, 22, 452, 2],
+      ["monsoons", 130, 220, 720, -2.5, 1]
+    ]
+  },
+  {
+    src: "that pink floral top.png",
+    caption: "that top I wore to lunch with Shruthi at that vietnamese place.",
+    color: "#df6b80",
+    lines: [
+      ["that top I wore to lunch with", 34, 40, 394, -2.5],
+      ["shruthi", 176, 22, 450, 2],
+      ["at that", 130, 220, 660, -2],
+      ["vietnamese place", 40, 80, 880, 1.5, 1]
+    ]
+  }
+];
+
+const CW = 700, CH = 1050;
+
+let i = 0;
+let viewMode = 'poster';
+let timers = [];
+
+const canvas = document.getElementById('canvas');
+const typeEl = document.getElementById('type');
+const figure = document.getElementById('figure');
+const toggleBtn = document.getElementById('toggleBtn');
+const posterView = document.getElementById('posterView');
+const gridView = document.getElementById('gridView');
+const gridContainer = document.getElementById('gridContainer');
+
+function idx(n){
+  const L = items.length;
+  return (n % L + L) % L;
+}
+
+/* scale the 700x1050 canvas to fit the viewport */
+function fitCanvas(){
+  const pad = window.innerWidth < 700 ? 0 : 24;
+  const s = Math.min(
+    (window.innerWidth  - pad) / CW,
+    (window.innerHeight - pad) / CH
+  );
+  canvas.style.transform = 'scale(' + s + ')';
+}
+
+/* pieces land whole, in a scrambled order, on uneven beats */
+function scrambled(n){
+  const out = [];
+  for (let k = 1; k < n; k += 2) out.push(k);
+  for (let k = 0; k < n; k += 2) out.push(k);
+  return out;
+}
+
+function renderPoster(){
+  timers.forEach(clearTimeout);
+  timers = [];
+
+  const it = items[idx(i)];
+
+  figure.src = it.src;
+  figure.alt = it.caption;
+
+  typeEl.innerHTML = '';
+  const nodes = it.lines.map(function(l){
+    const el = document.createElement('i');
+    el.textContent = l[0];
+    el.style.fontSize  = l[1] + 'px';
+    el.style.left      = l[2] + 'px';
+    el.style.top       = l[3] + 'px';
+    el.style.transform = 'rotate(' + l[4] + 'deg)';
+    el.style.color     = it.color;
+    if (l[5]) el.className = 'it';
+    typeEl.appendChild(el);
+    return el;
+  });
+
+  const order = scrambled(nodes.length);
+  const BEAT = 190;
+  order.forEach(function(target, n){
+    const jitter = (n % 2 ? 0.62 : 1.18);
+    timers.push(setTimeout(function(){
+      nodes[target].classList.add('on');
+    }, Math.round(BEAT * n * jitter) + 140));
+  });
+}
+
+function go(delta){
+  i = idx(i + delta);
+  renderPoster();
+}
+
+/* ---------- GRID ---------- */
+function renderGrid(){
+  gridContainer.innerHTML = '';
+  items.forEach(function(item, n){
+    const div = document.createElement('div');
+    div.className = 'item';
+
+    const img = document.createElement('img');
+    img.src = item.src;
+    img.alt = item.caption || '';
+    img.addEventListener('click', function(){
+      i = n;
+      toggleView();
+    });
+
+    const caption = document.createElement('div');
+    caption.className = 'caption';
+    caption.textContent = item.caption || '';
+
+    div.appendChild(img);
+    div.appendChild(caption);
+    gridContainer.appendChild(div);
+  });
+}
+
+function toggleView(){
+  if (viewMode === 'poster'){
+    viewMode = 'grid';
+    posterView.classList.remove('active');
+    gridView.classList.add('active');
+    toggleBtn.textContent = 'view as posters';
+    document.body.style.overflow = 'auto';
+    if (gridContainer.children.length === 0) renderGrid();
+  } else {
+    viewMode = 'poster';
+    gridView.classList.remove('active');
+    posterView.classList.add('active');
+    toggleBtn.textContent = 'view as grid';
+    document.body.style.overflow = 'hidden';
+    fitCanvas();
+    renderPoster();
+  }
+}
+
+toggleBtn.addEventListener('click', toggleView);
+document.getElementById('zPrev').addEventListener('click', function(){ go(-1); });
+document.getElementById('zNext').addEventListener('click', function(){ go(1); });
+
+window.addEventListener('keydown', function(e){
+  if (viewMode !== 'poster') return;
+  if (e.key === 'ArrowLeft')  go(-1);
+  if (e.key === 'ArrowRight') go(1);
+});
+
+let wheelLock = false;
+window.addEventListener('wheel', function(e){
+  if (viewMode !== 'poster') return;
+  if (wheelLock) return;
+  wheelLock = true;
+  setTimeout(function(){ wheelLock = false; }, 300);
+  const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+  if (d > 0) go(1);
+  if (d < 0) go(-1);
+}, { passive: true });
+
+let touchX = 0;
+window.addEventListener('touchstart', function(e){
+  touchX = e.changedTouches[0].screenX;
+}, { passive: true });
+window.addEventListener('touchend', function(e){
+  if (viewMode !== 'poster') return;
+  const diff = touchX - e.changedTouches[0].screenX;
+  if (Math.abs(diff) > 50) go(diff > 0 ? 1 : -1);
+}, { passive: true });
+
+window.addEventListener('resize', fitCanvas);
+
+fitCanvas();
+renderPoster();
+</script>
+</body>
+</html>
