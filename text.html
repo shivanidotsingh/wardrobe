@@ -38,10 +38,10 @@
     overflow:hidden;
   }
 
-  /* composed inside a fixed 900 x 1050 canvas, then scaled to fit */
+  /* composed inside a fixed 1150 x 1050 canvas, then scaled to fit */
   .canvas{
     position:relative;
-    width:900px;
+    width:1150px;
     height:1050px;
     flex:none;
     transform-origin:center center;
@@ -76,7 +76,7 @@
     display:block;
   }
 
-  /* press g — dashed box is the figure, tinted bands are the safe channels */
+  /* press g — dashed box is the figure, tinted bands are the channels */
   .guide{ position:absolute; inset:0; z-index:3; display:none; pointer-events:none; }
   .guide.on{ display:block; }
   .guide .fig{
@@ -84,14 +84,14 @@
     height:1010px; width:420px; border:2px dashed rgba(0,0,0,.4);
   }
   .guide .ch{ position:absolute; top:0; bottom:0; background:rgba(0,120,255,.07); }
-  .guide .chL{ left:20px; width:220px; }
-  .guide .chR{ left:680px; width:200px; }
+  .guide .chL{ left:20px; width:340px; }
+  .guide .chR{ left:800px; width:330px; }
 
   .zone{
     position:fixed;
     top:0;
     bottom:0;
-    width:28%;
+    width:24%;
     z-index:900;
     cursor:pointer;
   }
@@ -174,23 +174,24 @@
 
 <script>
 /* ---------------------------------------------------------------
-   Canvas is 900 x 1050. The figure is ~420 wide, centred.
+   Canvas is 1150 x 1050. The figure is ~420 wide and centred,
+   so it sits at x 365-785.
 
-   READING PATH — every poster runs the same way, so the sentence
-   holds together:
-       y  70–110   opening words, small, top left
-       y 110–290   first hero, top left, running right
-       y 300–560   the middle bits, side channels
-       y 680–760   final hero, pushed right, ending near x 860
+       LEFT CHANNEL    x 20-360
+       RIGHT CHANNEL   x 800-1130
+
+   READING PATH - every poster runs the same way:
+       y  70-110   opening words, small, top left
+       y 110-290   first hero, top left, running right
+       y 300-560   the middle bits
+       y 700-760   final hero, over on the right
 
    THREE TIERS
-   small   26–44   the, of, in, at, and — connectives.
-                   Side channels: x 20–235 or x 680–880.
-   mid     90–170  secondary content words.
-   hero   170–210  the word the poster is about. Crosses the
-                   figure, which is the point.
+   small   26-44   the, of, in, at, and - connectives.
+   mid     90-170  secondary content words.
+   hero   170-210  the word the poster is about.
 
-   Rough width: chars x 0.42 x fontSize. Keep x + width under 880.
+   Rough width: chars x 0.42 x fontSize. Keep x + width under 1130.
 
    line = [text, fontSize, x, y, rotation, italic?]
    Lines reveal in array order, so keep them in sentence order.
@@ -201,10 +202,10 @@ const items = [
     caption: "the dress I wore on our trip to den haag.",
     color: "#cc3a35",
     lines: [
-      ["the dress I wore", 28, 20, 70, -3],
-      ["on our trip to", 28, 20, 106, -3],
-      ["den", 200, 40, 160, 2],
-      ["haag", 200, 520, 700, -2.5, 1]
+      ["the dress I wore", 30, 20, 70, -3],
+      ["on our trip to", 30, 20, 110, -3],
+      ["den", 200, 40, 170, 2],
+      ["haag", 200, 780, 700, -2.5, 1]
     ]
   },
   {
@@ -212,10 +213,10 @@ const items = [
     caption: "that indigo print dress with deep pockets.",
     color: "#29459a",
     lines: [
-      ["that indigo print", 28, 20, 70, -2.5],
-      ["dress with", 28, 20, 106, -2.5],
-      ["deep", 200, 40, 160, 2],
-      ["pockets", 170, 360, 700, -2, 1]
+      ["that indigo print", 30, 20, 70, -2.5],
+      ["dress with", 30, 20, 110, -2.5],
+      ["deep", 200, 40, 170, 2],
+      ["pockets", 170, 620, 700, -2, 1]
     ]
   },
   {
@@ -224,10 +225,11 @@ const items = [
     color: "#f4f1e8",
     lines: [
       ["that", 30, 20, 70, -3],
-      ["westside", 180, 50, 110, 1.5],
-      ["dress richa said", 28, 680, 420, -2],
-      ["her mom also", 28, 680, 456, -2],
-      ["owned", 190, 460, 700, -2.5, 1]
+      ["westside", 180, 40, 115, 1.5],
+      ["dress", 180, 700, 330, -2],
+      ["richa said", 30, 940, 520, -2],
+      ["her mom also", 30, 930, 558, -2],
+      ["owned", 190, 700, 700, -8, 1]
     ]
   },
   {
@@ -236,9 +238,9 @@ const items = [
     color: "#4a63c8",
     lines: [
       ["that", 30, 20, 70, -3],
-      ["family", 200, 40, 120, 2],
-      ["photo", 170, 400, 420, -2],
-      ["dress", 190, 460, 720, 1.5, 1]
+      ["family", 200, 40, 125, 2],
+      ["photo", 170, 740, 380, -4],
+      ["dress", 190, 700, 700, -6, 1]
     ]
   },
   {
@@ -247,9 +249,9 @@ const items = [
     color: "#b2382f",
     lines: [
       ["that", 30, 20, 70, -3],
-      ["kutch", 200, 40, 120, 2],
-      ["trip", 170, 420, 420, -2],
-      ["skirt", 190, 460, 720, 1.5, 1]
+      ["kutch", 200, 40, 125, 2],
+      ["trip", 170, 820, 380, -5],
+      ["skirt", 190, 700, 700, -7, 1]
     ]
   },
   {
@@ -257,12 +259,11 @@ const items = [
     caption: "the linen top I wore last summer in France.",
     color: "#8fb3d9",
     lines: [
-      ["the linen top", 28, 20, 70, -2.5],
-      ["I wore", 28, 20, 106, -2.5],
-      ["last", 200, 40, 160, 2],
-      ["summer", 160, 420, 300, -2],
+      ["the linen top I wore", 30, 20, 70, -2.5],
+      ["last", 200, 40, 130, 2],
+      ["summer", 160, 700, 300, -2],
       ["in", 44, 20, 470, -1],
-      ["france", 180, 400, 700, -2.5, 1]
+      ["france", 180, 650, 700, -2.5, 1]
     ]
   },
   {
@@ -270,10 +271,10 @@ const items = [
     caption: "that small bird print dress.",
     color: "#e5b032",
     lines: [
-      ["that small", 28, 20, 70, -4],
-      ["bird", 200, 40, 120, 2.5],
-      ["print", 170, 420, 330, -3],
-      ["dress", 190, 460, 700, 1.5, 1]
+      ["that small", 30, 20, 70, -4],
+      ["bird", 200, 40, 125, 2.5],
+      ["print", 170, 740, 330, -3],
+      ["dress", 190, 700, 700, 1.5, 1]
     ]
   },
   {
@@ -281,9 +282,9 @@ const items = [
     caption: "the dress I have worn out.",
     color: "#41639b",
     lines: [
-      ["the dress I have", 28, 20, 70, -2.5],
-      ["worn", 200, 40, 130, 2],
-      ["out", 210, 610, 700, -2.5, 1]
+      ["the dress I have", 30, 20, 70, -2.5],
+      ["worn", 200, 40, 135, 2],
+      ["out", 210, 840, 700, -2.5, 1]
     ]
   },
   {
@@ -291,11 +292,11 @@ const items = [
     caption: "that dress a stranger complimented at the bienalle.",
     color: "#f4f1e8",
     lines: [
-      ["that dress a", 28, 20, 70, -2.5],
-      ["stranger", 170, 40, 120, 1.5],
-      ["complimented", 28, 20, 300, -2.5],
-      ["at the", 34, 680, 420, -2],
-      ["bienalle", 190, 240, 700, -2.5, 1]
+      ["that dress a", 30, 20, 70, -2.5],
+      ["stranger", 170, 40, 125, 1.5],
+      ["complimented", 30, 20, 320, -2.5],
+      ["at the", 34, 930, 420, -2],
+      ["bienalle", 190, 470, 700, -2.5, 1]
     ]
   },
   {
@@ -303,11 +304,11 @@ const items = [
     caption: "the dress I wore to cubbon park when mum was visiting.",
     color: "#3b4f96",
     lines: [
-      ["the dress I wore to", 26, 20, 70, -3],
-      ["cubbon", 190, 40, 120, 2],
-      ["park", 170, 560, 330, -2],
-      ["when mum", 70, 640, 560, 1.5],
-      ["was visiting", 90, 400, 700, -2, 1]
+      ["the dress I wore to", 30, 20, 70, -3],
+      ["cubbon", 190, 40, 125, 2],
+      ["park", 170, 820, 330, -2],
+      ["when mum", 70, 880, 560, 1.5],
+      ["was visiting", 90, 640, 700, -2, 1]
     ]
   },
   {
@@ -315,13 +316,13 @@ const items = [
     caption: "that dress I wore at the weekender and hardly ever again.",
     color: "#e08a95",
     lines: [
-      ["that dress I wore", 26, 20, 70, -2.5],
-      ["at the", 26, 20, 102, -2.5],
-      ["weekender", 160, 40, 150, 2],
-      ["and", 44, 680, 400, -2],
-      ["hardly", 120, 560, 450, -2.5, 1],
+      ["that dress I wore", 30, 20, 70, -2.5],
+      ["at the", 30, 20, 110, -2.5],
+      ["weekender", 160, 40, 165, 2],
+      ["and", 44, 930, 400, -2],
+      ["hardly", 120, 800, 450, -2.5, 1],
       ["ever", 130, 20, 640, 1.5],
-      ["again", 130, 540, 720, -2, 1]
+      ["again", 130, 820, 720, -2, 1]
     ]
   },
   {
@@ -329,11 +330,11 @@ const items = [
     caption: "that denim skirt I wore to karaoke in valence.",
     color: "#6288ad",
     lines: [
-      ["that denim skirt", 28, 20, 70, -2.5],
-      ["I wore to", 28, 20, 106, -2.5],
-      ["karaoke", 180, 40, 160, 2],
+      ["that denim skirt", 30, 20, 70, -2.5],
+      ["I wore to", 30, 20, 110, -2.5],
+      ["karaoke", 180, 40, 170, 2],
       ["in", 44, 20, 470, -1.5],
-      ["valence", 170, 360, 700, -2.5, 1]
+      ["valence", 170, 620, 700, -2.5, 1]
     ]
   },
   {
@@ -341,11 +342,11 @@ const items = [
     caption: "that second-hand diwali dress from indiska.",
     color: "#a4523c",
     lines: [
-      ["that second-hand", 28, 20, 70, -3],
-      ["diwali", 200, 40, 120, 2],
-      ["dress", 160, 440, 340, -2],
-      ["from", 44, 680, 500, 1.5],
-      ["indiska", 170, 360, 700, -2.5, 1]
+      ["that second-hand", 30, 20, 70, -3],
+      ["diwali", 200, 40, 125, 2],
+      ["dress", 160, 760, 340, -2],
+      ["from", 44, 930, 500, 1.5],
+      ["indiska", 170, 620, 700, -2.5, 1]
     ]
   },
   {
@@ -353,10 +354,10 @@ const items = [
     caption: "the dress that reminds me of mumbai monsoons.",
     color: "#2f63b5",
     lines: [
-      ["the dress that", 28, 20, 70, -2.5],
-      ["reminds me of", 28, 20, 106, -2.5],
-      ["mumbai", 190, 40, 160, 2],
-      ["monsoons", 180, 260, 700, -2.5, 1]
+      ["the dress that", 30, 20, 70, -2.5],
+      ["reminds me of", 30, 20, 110, -2.5],
+      ["mumbai", 190, 40, 170, 2],
+      ["monsoons", 180, 510, 700, -2.5, 1]
     ]
   },
   {
@@ -364,17 +365,17 @@ const items = [
     caption: "that top I wore to lunch with Shruthi at that vietnamese place.",
     color: "#df6b80",
     lines: [
-      ["that top I wore to", 28, 20, 70, -2.5],
-      ["lunch with", 28, 20, 106, -2.5],
-      ["shruthi", 180, 40, 160, 2],
-      ["at that", 34, 680, 420, -2],
+      ["that top I wore to", 30, 20, 70, -2.5],
+      ["lunch with", 30, 20, 110, -2.5],
+      ["shruthi", 180, 40, 170, 2],
+      ["at that", 34, 930, 420, -2],
       ["vietnamese", 130, 20, 560, 1.5],
-      ["place", 170, 520, 700, -2.5, 1]
+      ["place", 170, 740, 700, -2.5, 1]
     ]
   }
 ];
 
-const CW = 900, CH = 1050;
+const CW = 1150, CH = 1050;
 
 let i = 0;
 let viewMode = 'poster';
@@ -420,7 +421,7 @@ function renderPoster(){
     el.style.top       = l[3] + 'px';
     el.style.transform = 'rotate(' + l[4] + 'deg)';
     el.style.color     = it.color;
-    if (l[5]) el.className = 'it';
+    if (l[5]) el.classList.add('it');
     typeEl.appendChild(el);
     return el;
   });
