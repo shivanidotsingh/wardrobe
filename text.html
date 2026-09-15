@@ -174,25 +174,26 @@
 
 <script>
 /* ---------------------------------------------------------------
-   Canvas is 900 x 1050. At full height the figure is ~420 wide and
-   fills the canvas top to bottom, so the free space is horizontal
-   bands, not side margins:
+   Canvas is 900 x 1050. The figure is ~420 wide, centred.
 
-   TOP BAND      y 60–280    only your head is here (x ~400–500),
-                             so a hero word runs nearly full width.
-   BOTTOM BAND   y 870–1010  only feet. Same — wide open.
-   SIDE CHANNELS x 20–235 and x 680–880, for the middle third.
-                 Nothing wider than ~210 or it lands on you.
+   READING PATH — every poster runs the same way, so the sentence
+   holds together:
+       y  70–110   opening words, small, top left
+       y 110–290   first hero, top left, running right
+       y 300–560   the middle bits, side channels
+       y 680–760   final hero, pushed right, ending near x 860
 
    THREE TIERS
-   small   26–44   the, of, in, at, and — connectives and the
-                   run-on bits. Side channels only.
-   mid     90–160  secondary content words.
-   hero   160–210  the word the poster is about. Top or bottom band.
+   small   26–44   the, of, in, at, and — connectives.
+                   Side channels: x 20–235 or x 680–880.
+   mid     90–170  secondary content words.
+   hero   170–210  the word the poster is about. Crosses the
+                   figure, which is the point.
 
    Rough width: chars x 0.42 x fontSize. Keep x + width under 880.
 
    line = [text, fontSize, x, y, rotation, italic?]
+   Lines reveal in array order, so keep them in sentence order.
 ----------------------------------------------------------------*/
 const items = [
   {
@@ -200,10 +201,10 @@ const items = [
     caption: "the dress I wore on our trip to den haag.",
     color: "#cc3a35",
     lines: [
-      ["the dress I wore", 28, 20, 330, -3],
-      ["on our trip to", 28, 20, 366, -3],
-      ["den", 200, 60, 80, 2],
-      ["haag", 200, 420, 900, -2.5, 1]
+      ["the dress I wore", 28, 20, 70, -3],
+      ["on our trip to", 28, 20, 106, -3],
+      ["den", 200, 40, 160, 2],
+      ["haag", 200, 520, 700, -2.5, 1]
     ]
   },
   {
@@ -211,10 +212,10 @@ const items = [
     caption: "that indigo print dress with deep pockets.",
     color: "#29459a",
     lines: [
-      ["that indigo print", 28, 20, 330, -2.5],
-      ["dress with", 28, 20, 366, -2.5],
-      ["deep", 200, 50, 90, 2],
-      ["pockets", 170, 300, 900, -2, 1]
+      ["that indigo print", 28, 20, 70, -2.5],
+      ["dress with", 28, 20, 106, -2.5],
+      ["deep", 200, 40, 160, 2],
+      ["pockets", 170, 360, 700, -2, 1]
     ]
   },
   {
@@ -222,11 +223,11 @@ const items = [
     caption: "that westside dress richa said her mom also owned.",
     color: "#f4f1e8",
     lines: [
-      ["that", 30, 20, 320, -3],
-      ["westside", 180, 80, 80, 1.5],
-      ["dress richa said", 28, 680, 620, -2],
-      ["her mom also", 28, 680, 656, -2],
-      ["owned", 190, 320, 900, -2.5, 1]
+      ["that", 30, 20, 70, -3],
+      ["westside", 180, 50, 110, 1.5],
+      ["dress richa said", 28, 680, 420, -2],
+      ["her mom also", 28, 680, 456, -2],
+      ["owned", 190, 460, 700, -2.5, 1]
     ]
   },
   {
@@ -234,10 +235,10 @@ const items = [
     caption: "that family photo dress.",
     color: "#4a63c8",
     lines: [
-      ["that", 30, 20, 320, -3],
-      ["family", 200, 70, 80, 2],
-      ["photo", 170, 60, 880, -2],
-      ["dress", 170, 480, 960, 1.5, 1]
+      ["that", 30, 20, 70, -3],
+      ["family", 200, 40, 120, 2],
+      ["photo", 170, 400, 420, -2],
+      ["dress", 190, 460, 720, 1.5, 1]
     ]
   },
   {
@@ -245,10 +246,10 @@ const items = [
     caption: "that kutch trip skirt.",
     color: "#b2382f",
     lines: [
-      ["that", 30, 20, 320, -3],
-      ["kutch", 200, 60, 80, 2],
-      ["trip", 160, 60, 890, -2],
-      ["skirt", 180, 440, 950, 1.5, 1]
+      ["that", 30, 20, 70, -3],
+      ["kutch", 200, 40, 120, 2],
+      ["trip", 170, 420, 420, -2],
+      ["skirt", 190, 460, 720, 1.5, 1]
     ]
   },
   {
@@ -256,12 +257,12 @@ const items = [
     caption: "the linen top I wore last summer in France.",
     color: "#8fb3d9",
     lines: [
-      ["the linen top", 28, 20, 330, -2.5],
-      ["I wore", 28, 20, 366, -2.5],
-      ["last", 200, 60, 80, 2],
-      ["summer", 160, 430, 150, -2],
-      ["in", 44, 20, 420, -1],
-      ["france", 180, 380, 920, -2.5, 1]
+      ["the linen top", 28, 20, 70, -2.5],
+      ["I wore", 28, 20, 106, -2.5],
+      ["last", 200, 40, 160, 2],
+      ["summer", 160, 420, 300, -2],
+      ["in", 44, 20, 470, -1],
+      ["france", 180, 400, 700, -2.5, 1]
     ]
   },
   {
@@ -269,10 +270,10 @@ const items = [
     caption: "that small bird print dress.",
     color: "#e5b032",
     lines: [
-      ["that small", 28, 20, 330, -4],
-      ["bird", 200, 50, 80, 2.5],
-      ["print", 170, 460, 160, -3],
-      ["dress", 180, 300, 920, 1.5, 1]
+      ["that small", 28, 20, 70, -4],
+      ["bird", 200, 40, 120, 2.5],
+      ["print", 170, 420, 330, -3],
+      ["dress", 190, 460, 700, 1.5, 1]
     ]
   },
   {
@@ -280,9 +281,9 @@ const items = [
     caption: "the dress I have worn out.",
     color: "#41639b",
     lines: [
-      ["the dress I have", 28, 20, 330, -2.5],
-      ["worn", 200, 60, 80, 2],
-      ["out", 210, 480, 900, -2.5, 1]
+      ["the dress I have", 28, 20, 70, -2.5],
+      ["worn", 200, 40, 130, 2],
+      ["out", 210, 610, 700, -2.5, 1]
     ]
   },
   {
@@ -290,11 +291,11 @@ const items = [
     caption: "that dress a stranger complimented at the bienalle.",
     color: "#f4f1e8",
     lines: [
-      ["that dress a", 28, 20, 330, -2.5],
-      ["complimented", 28, 20, 366, -2.5],
-      ["stranger", 170, 60, 80, 1.5],
-      ["at the", 34, 680, 620, -2],
-      ["bienalle", 190, 120, 910, -2.5, 1]
+      ["that dress a", 28, 20, 70, -2.5],
+      ["stranger", 170, 40, 120, 1.5],
+      ["complimented", 28, 20, 300, -2.5],
+      ["at the", 34, 680, 420, -2],
+      ["bienalle", 190, 240, 700, -2.5, 1]
     ]
   },
   {
@@ -302,11 +303,11 @@ const items = [
     caption: "the dress I wore to cubbon park when mum was visiting.",
     color: "#3b4f96",
     lines: [
-      ["the dress I wore to", 26, 20, 330, -3],
-      ["cubbon", 190, 50, 80, 2],
-      ["park", 170, 560, 170, -2],
-      ["when mum", 90, 20, 880, 1.5],
-      ["was visiting", 90, 420, 960, -2, 1]
+      ["the dress I wore to", 26, 20, 70, -3],
+      ["cubbon", 190, 40, 120, 2],
+      ["park", 170, 560, 330, -2],
+      ["when mum", 70, 640, 560, 1.5],
+      ["was visiting", 90, 400, 700, -2, 1]
     ]
   },
   {
@@ -314,13 +315,13 @@ const items = [
     caption: "that dress I wore at the weekender and hardly ever again.",
     color: "#e08a95",
     lines: [
-      ["that dress I wore", 26, 20, 330, -2.5],
-      ["at the", 26, 20, 362, -2.5],
-      ["weekender", 160, 40, 80, 2],
-      ["and", 44, 680, 600, -2],
-      ["hardly", 120, 560, 650, -2.5, 1],
-      ["ever", 130, 20, 880, 1.5],
-      ["again", 130, 400, 960, -2, 1]
+      ["that dress I wore", 26, 20, 70, -2.5],
+      ["at the", 26, 20, 102, -2.5],
+      ["weekender", 160, 40, 150, 2],
+      ["and", 44, 680, 400, -2],
+      ["hardly", 120, 560, 450, -2.5, 1],
+      ["ever", 130, 20, 640, 1.5],
+      ["again", 130, 540, 720, -2, 1]
     ]
   },
   {
@@ -328,11 +329,11 @@ const items = [
     caption: "that denim skirt I wore to karaoke in valence.",
     color: "#6288ad",
     lines: [
-      ["that denim skirt", 28, 20, 330, -2.5],
-      ["I wore to", 28, 20, 366, -2.5],
-      ["karaoke", 180, 40, 80, 2],
-      ["in", 44, 20, 420, -1.5],
-      ["valence", 170, 340, 910, -2.5, 1]
+      ["that denim skirt", 28, 20, 70, -2.5],
+      ["I wore to", 28, 20, 106, -2.5],
+      ["karaoke", 180, 40, 160, 2],
+      ["in", 44, 20, 470, -1.5],
+      ["valence", 170, 360, 700, -2.5, 1]
     ]
   },
   {
@@ -340,11 +341,11 @@ const items = [
     caption: "that second-hand diwali dress from indiska.",
     color: "#a4523c",
     lines: [
-      ["that second-hand", 28, 20, 330, -3],
-      ["diwali", 200, 50, 80, 2],
-      ["dress", 160, 20, 880, -2],
-      ["from", 44, 680, 600, 1.5],
-      ["indiska", 170, 370, 960, -2.5, 1]
+      ["that second-hand", 28, 20, 70, -3],
+      ["diwali", 200, 40, 120, 2],
+      ["dress", 160, 440, 340, -2],
+      ["from", 44, 680, 500, 1.5],
+      ["indiska", 170, 360, 700, -2.5, 1]
     ]
   },
   {
@@ -352,10 +353,10 @@ const items = [
     caption: "the dress that reminds me of mumbai monsoons.",
     color: "#2f63b5",
     lines: [
-      ["the dress that", 28, 20, 330, -2.5],
-      ["reminds me of", 28, 20, 366, -2.5],
-      ["mumbai", 190, 50, 80, 2],
-      ["monsoons", 180, 160, 910, -2.5, 1]
+      ["the dress that", 28, 20, 70, -2.5],
+      ["reminds me of", 28, 20, 106, -2.5],
+      ["mumbai", 190, 40, 160, 2],
+      ["monsoons", 180, 260, 700, -2.5, 1]
     ]
   },
   {
@@ -363,12 +364,12 @@ const items = [
     caption: "that top I wore to lunch with Shruthi at that vietnamese place.",
     color: "#df6b80",
     lines: [
-      ["that top I wore to", 28, 20, 330, -2.5],
-      ["lunch with", 28, 20, 366, -2.5],
-      ["shruthi", 180, 40, 80, 2],
-      ["at that", 34, 680, 620, -2],
-      ["vietnamese", 130, 20, 880, 1.5],
-      ["place", 170, 420, 960, -2.5, 1]
+      ["that top I wore to", 28, 20, 70, -2.5],
+      ["lunch with", 28, 20, 106, -2.5],
+      ["shruthi", 180, 40, 160, 2],
+      ["at that", 34, 680, 420, -2],
+      ["vietnamese", 130, 20, 560, 1.5],
+      ["place", 170, 520, 700, -2.5, 1]
     ]
   }
 ];
@@ -401,14 +402,6 @@ function fitCanvas(){
   canvas.style.transform = 'scale(' + s + ')';
 }
 
-/* pieces land whole, scrambled order, uneven beats */
-function scrambled(n){
-  const out = [];
-  for (let k = 1; k < n; k += 2) out.push(k);
-  for (let k = 0; k < n; k += 2) out.push(k);
-  return out;
-}
-
 function renderPoster(){
   timers.forEach(clearTimeout);
   timers = [];
@@ -432,12 +425,12 @@ function renderPoster(){
     return el;
   });
 
-  const order = scrambled(nodes.length);
-  const BEAT = 190;
-  order.forEach(function(target, n){
-    const jitter = (n % 2 ? 0.62 : 1.18);
+  /* pieces land whole, in sentence order, on slightly uneven beats */
+  const BEAT = 210;
+  nodes.forEach(function(node, n){
+    const jitter = (n % 2 ? 0.85 : 1.15);
     timers.push(setTimeout(function(){
-      nodes[target].classList.add('on');
+      node.classList.add('on');
     }, Math.round(BEAT * n * jitter) + 140));
   });
 }
