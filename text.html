@@ -38,7 +38,6 @@
     overflow:hidden;
   }
 
-  /* composed inside a fixed 1150 x 1050 canvas, then scaled to fit */
   .canvas{
     position:relative;
     width:1150px;
@@ -149,7 +148,6 @@
 
 <button class="toggle-btn" id="toggleBtn">view as grid</button>
 
-<!-- POSTER VIEW -->
 <div class="poster-view active" id="posterView">
   <div class="fit">
     <div class="canvas" id="canvas">
@@ -167,7 +165,6 @@
   <div class="hint">shivi's summer wardrobe</div>
 </div>
 
-<!-- GRID VIEW -->
 <div class="grid-view" id="gridView">
   <div class="grid" id="gridContainer"></div>
 </div>
@@ -178,16 +175,11 @@
    so it sits at x 365-785.
 
        LEFT CHANNEL    x 20-360
-       RIGHT CHANNEL   x 800-1130
-
-   READING PATH - every poster runs the same way:
-       y  70-110   opening words, small, top left
-       y 110-290   first hero, top left, running right
-       y 300-560   the middle bits
-       y 700-760   final hero, over on the right
+       RIGHT CHANNEL   x 800-1130  (only ~330 wide, so long words
+                                    on the right must hyphenate)
 
    THREE TIERS
-   small   26-44   the, of, in, at, and - connectives.
+   small   26-60   the, of, in, at, and - connectives.
    mid     90-170  secondary content words.
    hero   170-210  the word the poster is about.
 
@@ -349,7 +341,7 @@ const items = [
       ["diwali", 200, 40, 125, 2],
       ["dress", 160, 20, 340, -2],
       ["from", 44, 880, 330, 1.5],
-      ["indiska", 130, 740, 430, -4, 1]
+      ["indiska", 110, 800, 430, -4, 1]
     ]
   },
   {
@@ -359,9 +351,10 @@ const items = [
     lines: [
       ["the dress that", 30, 20, 70, -2.5],
       ["reminds me of", 30, 20, 110, -2.5],
-      ["mumbai", 190, 40, 170, 2],
-      ["mon-", 180, 700, 470, -3, 1],
-      ["soons", 180, 640, 690, -3, 1]
+      ["mum-", 190, 40, 170, 2],
+      ["bai", 190, 110, 318, 2],
+      ["mon-", 150, 760, 460, -3, 1],
+      ["soons", 140, 830, 578, -3, 1]
     ]
   },
   {
@@ -371,10 +364,11 @@ const items = [
     lines: [
       ["that top I wore to", 30, 20, 70, -2.5],
       ["lunch", 190, 40, 125, 2],
-      ["with", 170, 700, 330, -3],
-      ["shruthi", 190, 560, 620, -2.5, 1],
-      ["at that vietnamese", 30, 880, 800, -2],
-      ["pho place", 30, 880, 836, -2]
+      ["with", 150, 800, 330, -3],
+      ["shru-", 150, 800, 450, -2.5, 1],
+      ["thi", 150, 870, 568, -2.5, 1],
+      ["at that vietnamese", 30, 800, 700, -2],
+      ["pho place", 30, 800, 736, -2]
     ]
   }
 ];
@@ -430,7 +424,6 @@ function renderPoster(){
     return el;
   });
 
-  /* pieces land whole, in sentence order, on slightly uneven beats */
   const BEAT = 210;
   nodes.forEach(function(node, n){
     const jitter = (n % 2 ? 0.85 : 1.15);
